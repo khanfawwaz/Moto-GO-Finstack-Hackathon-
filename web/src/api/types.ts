@@ -19,6 +19,7 @@ export interface Equity {
   known: boolean; reason: string | null; low: number | null; high: number | null; negative?: boolean; confidence: string | null;
 }
 export interface Vehicle {
+  reminders?: { kind: string; due: string }[];
   id: string; type: VType; model: Model | null; label: string; verified_model: boolean; free_text_model: string | null;
   variant: string | null; year: number; ownership: "current" | "past"; city: string | null; odometer: number | null;
   condition: string | null; owners: number | null; accident_flag: boolean | null; modified_flag: boolean | null;
@@ -37,6 +38,7 @@ export interface GarageHome {
   total_equity: { low: number; high: number; counted: number; of: number } | null;
   care_task: { vehicle_id: string; vehicle: string; kind: string; due: string; overdue: boolean } | null;
   next_goal: { id: string; label: string; price_assumption: number; target_date: string | null; savings: number; monthly: number } | null;
+  suggestions: Model[];
   collection: Progress;
 }
 export interface Goal {

@@ -14,11 +14,14 @@ SEGMENTS = [("commute", "Commute"), ("touring", "Touring"), ("adventure", "Adven
             ("performance", "Performance"), ("ev", "Electric")]
 
 # (kind, category) -> xp. Saving and past-ownership earn none; repeats earn none (deduplicated by constraint).
-XP_RULES = {"spotted": 10, "test_driven": 25, "saved": 0}
+XP_RULES = {"spotted": 50, "test_driven": 250, "saved": 0}
 ACTIVITIES = {
     "spotted": ("spotted", ""), "ridden": ("experienced", "ridden"), "driven": ("experienced", "driven"),
     "rented": ("experienced", "rented"), "test_driven": ("test_driven", ""), "past_owned": ("experienced", "past_owned"),
     "saved": ("saved", ""),
+    "short_rental": ("experienced", "short_rental"), "long_rental": ("experienced", "long_rental"),
+    "intent_test_drive": ("journey", "test_drive"), "intent_short_rental": ("journey", "short_rental"),
+    "intent_long_rental": ("journey", "long_rental"), "intent_own": ("journey", "own"),
 }
 
 
@@ -56,6 +59,21 @@ def run_valuation(db: Session, v: Vehicle) -> Valuation:
     return val
 
 
+def value_points(maximum_value: int | None) -> int:
+    """One collection point for each ₹1,000 of the best current value estimate."""
+    return max(1, maximum_value // 1_000) if maximum_value is not None else 0
+
+
+def ownership_points(maximum_value: int | None) -> int:
+    return 2000 + 10 * value_points(maximum_value)
+
+
+def experience_points(kind: str, category: str = "") -> int:
+    if kind == "experienced":
+        return 500 if category in {"rented", "short_rental", "long_rental"} else 250 if category in {"ridden", "driven"} else 0
+    return XP_RULES.get(kind, 0)
+
+
 def ser_loan(l: LoanSnapshot | None) -> dict:
     if not l:
         return {"status": "unknown", "lender": None, "principal": None, "statement_date": None, "source": "not_provided"}
@@ -85,17 +103,34 @@ def ser_vehicle(db: Session, v: Vehicle) -> dict:
                        "as_of": val.as_of.isoformat()} if val else None),
         "loan": loan_d, "equity": eq,
         "next_care": ({"kind": nxt.kind, "due": nxt.next_due.isoformat()} if nxt else None),
+        "reminders": [{"kind": c.kind, "due": c.next_due.isoformat()} for c in
+                      db.query(CareLog).filter(CareLog.vehicle_id == v.id, CareLog.next_due.isnot(None), CareLog.remind.is_(True)).order_by(CareLog.next_due)],
     }
 
 
 def xp_total(db: Session, user_id: str) -> int:
-    return sum(a.xp for a in db.query(Activity).filter_by(user_id=user_id))
+    activities = db.query(Activity).filter_by(user_id=user_id).all()
+    # Apply the current reward scale to old logs too, without database rewrites.
+    total = sum((a.xp if a.provenance == "ownership_v2" else 2000 + 10 * a.xp) if a.kind == "owned"
+                else experience_points(a.kind, a.category) for a in activities)
+    # Existing garages predate the ownership milestone. Count those current
+    # vehicles too, without double-counting the new activity record.
+    rewarded_models = {a.model_id for a in activities if a.kind == "owned" and a.category == "garage"}
+    for v in db.query(Vehicle).filter_by(user_id=user_id, ownership="current"):
+        if v.model_id in rewarded_models:
+            continue
+        val = latest_valuation(db, v.id)
+        m = db.get(CatalogueModel, v.model_id) if v.model_id else None
+        total += ownership_points(val.high if val else (m.price_high if m else None))
+        if v.model_id:
+            rewarded_models.add(v.model_id)
+    return total
 
 
 def level_for(xp: int) -> dict:
-    lvl = 1 + xp // 50
-    return {"level": lvl, "xp": xp, "next_at": lvl * 50, "title": ["Pit-lane Rookie", "Kerb Spotter", "Trail Scout", "Road Captain",
-                                                                  "Apex Hunter", "Motorhead"][min(lvl - 1, 5)]}
+    lvl = 1 + xp // 1000
+    return {"level": lvl, "xp": xp, "next_at": lvl * 1000, "title": ["Pit Lane Rookie", "Road Explorer", "Weekend Driver", "Road Captain",
+                                                                  "Apex Hunter", "Garage Legend"][min(lvl - 1, 5)]}
 
 
 def badges_by_model(db: Session, user_id: str | None) -> dict[str, set[str]]:
@@ -103,10 +138,10 @@ def badges_by_model(db: Session, user_id: str | None) -> dict[str, set[str]]:
     if not user_id:
         return out
     for a in db.query(Activity).filter_by(user_id=user_id):
-        key = a.kind
+        # Keep the meaningful experience on the card: "Drove" is more useful
+        # than a catch-all "Experienced" label when scanning Explore.
+        key = f"intent_{a.category}" if a.kind == "journey" else a.category if a.kind == "experienced" and a.category else a.kind
         out.setdefault(a.model_id, set()).add(key)
-        if a.kind == "experienced" and a.category == "rented":
-            out[a.model_id].add("rented")
     for v in db.query(Vehicle).filter(Vehicle.user_id == user_id, Vehicle.model_id.isnot(None)):
         out.setdefault(v.model_id, set()).add("owned" if v.ownership == "current" else "owned_past")
     return out
@@ -115,7 +150,7 @@ def badges_by_model(db: Session, user_id: str | None) -> dict[str, set[str]]:
 def collection_progress(db: Session, user_id: str | None) -> dict:
     models = db.query(CatalogueModel).all()
     badges = badges_by_model(db, user_id)
-    discovered = {mid for mid, b in badges.items() if b & {"spotted", "experienced", "test_driven", "owned", "owned_past"}}
+    discovered = {mid for mid, b in badges.items() if b & {"spotted", "experienced", "driven", "ridden", "rented", "short_rental", "long_rental", "test_driven", "owned", "owned_past", "past_owned"}}
     segs = []
     for sid, label in SEGMENTS:
         ids = [m.id for m in models if m.segment == sid]
@@ -131,6 +166,33 @@ def next_goal(db: Session, user_id: str) -> dict | None:
     m = db.get(CatalogueModel, g.target_model_id)
     return {"id": g.id, "label": model_label(m), "price_assumption": g.price_assumption,
             "target_date": g.target_date.isoformat() if g.target_date else None, "savings": g.savings, "monthly": g.monthly}
+
+
+def roadmap_suggestions(db: Session, user_id: str) -> list[dict]:
+    """One aspirational bike and car, never a cheaper fallback or an owned model."""
+    current = db.query(Vehicle).filter_by(user_id=user_id, ownership="current").all()
+    excluded = {v.model_id for v in current if v.model_id}
+    excluded.update(a.model_id for a in db.query(Activity).filter_by(user_id=user_id, kind="saved"))
+    excluded.update(g.target_model_id for g in db.query(Goal).filter_by(user_id=user_id))
+    values = []
+    for vehicle in current:
+        valuation = latest_valuation(db, vehicle.id)
+        model = db.get(CatalogueModel, vehicle.model_id) if vehicle.model_id else None
+        if valuation:
+            values.append(valuation.high)
+        elif model:
+            values.append(model.price_high)
+    baseline = max(values, default=0)
+    suggestions = []
+    for kind, floor in (("bike", 300_000), ("car", 1_200_000)):
+        candidate = (db.query(CatalogueModel)
+                     .filter(CatalogueModel.type == kind,
+                             CatalogueModel.price_low >= max(baseline * 2, floor),
+                             CatalogueModel.id.notin_(excluded))
+                     .order_by(CatalogueModel.price_low, CatalogueModel.id).first())
+        if candidate:
+            suggestions.append(ser_model(candidate))
+    return suggestions
 
 
 def care_task(db: Session, user_id: str) -> dict | None:

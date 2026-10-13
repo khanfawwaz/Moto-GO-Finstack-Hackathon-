@@ -48,7 +48,7 @@ export default function Recovery() {
             {canResume && <Link to={`/finance/${id}${resume ? `/step/${resume}` : ""}`} className="btn-go">{c.resume ?? "Resume where I left off"}</Link>}
             <Link to="/roadmap" className={canResume ? "btn-ghost" : "btn-go"}>Back to my plan</Link>
             <Link to="/garage" className="btn-ghost">Go to my Garage</Link>
-            {id && reason === "bureau_declined" && <button className="btn-quiet text-ball-dark" disabled={cancel.isPending} onClick={() => cancel.mutate()}>Cancel this application</button>}
+            {id && reason === "bureau_declined" && <button className="btn-quiet text-coral-dark" disabled={cancel.isPending} onClick={() => cancel.mutate()}>Cancel this application</button>}
           </div>
         </div>
         <p className="text-center text-sm font-bold text-ink-mute">Need help? Support can see exactly where your application stopped.</p>

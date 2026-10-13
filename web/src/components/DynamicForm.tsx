@@ -81,7 +81,7 @@ function FieldRow({ f, register, control, error, values, applicationId, setValue
     case "checkbox":
       return (
         <div>
-          <label className={cx("flex min-h-[44px] cursor-pointer items-start gap-3 rounded-2xl border-2 p-3.5 font-bold", error ? "border-ball bg-ball-light/30" : "border-ink/15 bg-white")}>
+          <label className={cx("flex min-h-[44px] cursor-pointer items-start gap-3 rounded-2xl border-2 p-3.5 font-bold", error ? "border-coral bg-coral-light/30" : "border-ink/15 bg-white")}>
             <input type="checkbox" className="mt-1 h-5 w-5 shrink-0 accent-go" {...register(f.name)} {...common} />
             <span>{f.label}{f.consent && <span className="mt-1 block text-xs font-semibold text-ink-mute">Recorded with purpose, recipient, version and time. You can withdraw it from Profile.</span>}</span>
           </label>

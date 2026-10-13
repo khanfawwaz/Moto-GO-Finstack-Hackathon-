@@ -62,7 +62,7 @@ function Summary({ app }: { app: Application }) {
         <Stat label="Lender" value={<span className="text-base">{app.lender.name}</span>} sub="Makes the decision" />
         <Stat label="Status" value={<span className="text-base">{STATE_LABEL[app.state] ?? app.state}</span>} />
         {!closed && (
-          <button className="btn-quiet w-full text-ball-dark" disabled={cancel.isPending} onClick={() => { if (confirm("Cancel this application? You can start a new one later.")) cancel.mutate(); }}>
+          <button className="btn-quiet w-full text-coral-dark" disabled={cancel.isPending} onClick={() => { if (confirm("Cancel this application? You can start a new one later.")) cancel.mutate(); }}>
             <X className="h-4 w-4" aria-hidden /> Cancel application
           </button>
         )}

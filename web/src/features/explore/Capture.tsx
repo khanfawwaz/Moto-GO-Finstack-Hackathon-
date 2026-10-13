@@ -6,8 +6,8 @@ import { api } from "@/api/client";
 import { useInvalidate, useMe } from "@/api/hooks";
 import type { Model } from "@/api/types";
 import { ModelPicker } from "@/components/ModelPicker";
-import { Callout, Disc, PageHeader } from "@/components/ui";
-import { SEGMENT_COLOR } from "@/lib/format";
+import { Callout, PageHeader } from "@/components/ui";
+import { VehicleImage } from "@/components/VehicleImage";
 import { Link } from "react-router-dom";
 
 /** P0: manual model pick only. The photo is previewed on-device and never uploaded in this build. */
@@ -32,7 +32,7 @@ export default function Capture() {
     return (
       <div className="mx-auto max-w-md text-center">
         <div className="card animate-pop space-y-3 !p-8">
-          <Disc color={SEGMENT_COLOR[model.segment]} size={96} />
+          <VehicleImage id={model.id} label={model.label} type={model.type} className="h-28 w-40 rounded-2xl object-cover" />
           <h1 className="text-2xl">{result.duplicate ? "Already in your collection" : "Discovery added!"}</h1>
           <p className="font-bold text-ink-soft">{model.label}</p>
           <p className="text-3xl font-black text-go-dark">{result.duplicate ? "No new XP" : `+${result.xp_awarded} XP`}</p>
@@ -46,8 +46,8 @@ export default function Capture() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <PageHeader title="Capture a sighting" sub="Spot something on the road? Add it to your collection. Only capture when you're safely stationary." />
-      <Callout tone="info" title="Photos stay on your device in this demo"><span className="flex gap-2"><EyeOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />Server-side plate and face redaction plus model suggestion arrive in the pilot. For now you pick the model yourself, and nothing is uploaded.</span></Callout>
+      <PageHeader title="Capture a sighting" sub="Spot something on the road? Add it to your collection. Only capture when you're safely stationary. License plates should be blurred before sharing." />
+      <Callout tone="info" title="Photos stay on your device in this demo"><span className="flex gap-2"><EyeOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />License plates should be blurred before sharing. Server-side plate and face redaction plus model suggestion arrive in the pilot. For now you pick the model yourself, and nothing is uploaded.</span></Callout>
       <section className="card space-y-4">
         <div className="flex flex-wrap items-center gap-4">
           {url ? <img src={url} alt="Your selected photo preview" className="h-28 w-28 rounded-2xl border-2 border-ink/10 object-cover" /> : <div className="flex h-28 w-28 items-center justify-center rounded-2xl border-2 border-dashed border-ink/20 text-ink-mute"><Camera className="h-8 w-8" aria-hidden /></div>}

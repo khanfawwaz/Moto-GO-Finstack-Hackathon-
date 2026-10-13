@@ -1,14 +1,19 @@
-import { Binoculars, Bookmark, Bike, Flag, Key, KeyRound, Trophy } from "lucide-react";
+import { Binoculars, Bookmark, Bike, Flag, Key, KeyRound, Navigation, Trophy } from "lucide-react";
 import { cx } from "@/components/ui";
 
 export const BADGES: Record<string, { label: string; icon: typeof Bookmark; tone: string }> = {
   spotted: { label: "Spotted", icon: Binoculars, tone: "bg-sky-light text-sky-dark" },
   saved: { label: "Saved", icon: Bookmark, tone: "bg-sun-light text-sun-dark" },
   experienced: { label: "Experienced", icon: Flag, tone: "bg-go-light text-go-dark" },
-  test_driven: { label: "Test-driven", icon: Trophy, tone: "bg-ball-light text-ball-dark" },
+  ridden: { label: "Rode", icon: Bike, tone: "bg-go-light text-go-dark" },
+  driven: { label: "Drove", icon: Navigation, tone: "bg-go-light text-go-dark" },
+  test_driven: { label: "Driven", icon: Trophy, tone: "bg-coral-light text-coral-dark" },
   owned: { label: "Owned", icon: Key, tone: "bg-ink text-white" },
   owned_past: { label: "Owned before", icon: KeyRound, tone: "bg-ink/10 text-ink" },
+  past_owned: { label: "Owned before", icon: KeyRound, tone: "bg-ink/10 text-ink" },
   rented: { label: "Rented", icon: Bike, tone: "bg-go-light text-go-dark" },
+  short_rental: { label: "Short rental", icon: KeyRound, tone: "bg-go-light text-go-dark" },
+  long_rental: { label: "Long rental", icon: KeyRound, tone: "bg-go-light text-go-dark" },
 };
 
 export function BadgeChips({ badges, size = "sm" }: { badges: string[]; size?: "sm" | "xs" }) {
@@ -23,6 +28,6 @@ export function BadgeChips({ badges, size = "sm" }: { badges: string[]; size?: "
   );
 }
 
-export const isDiscovered = (badges: string[]) => badges.some((b) => ["spotted", "experienced", "test_driven", "owned", "owned_past"].includes(b));
+export const isDiscovered = (badges: string[]) => badges.some((b) => ["spotted", "experienced", "ridden", "driven", "rented", "test_driven", "past_owned", "owned", "owned_past"].includes(b));
 export const specLine = (s: Record<string, string | number>) =>
   [s.cc ? `${s.cc} cc` : null, s.range ? `${s.range} range` : null, s.bhp ? `${s.bhp} bhp` : null, s.eff ?? null].filter(Boolean).join(" · ");

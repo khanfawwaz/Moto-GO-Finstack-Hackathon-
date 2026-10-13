@@ -68,7 +68,7 @@ export default function SignUp() {
       <div className="mx-auto mb-6 flex max-w-md items-center justify-between"><Logo /><DemoBadge /></div>
       <div className="card mx-auto max-w-md !p-6">
         <h1 className="text-2xl">Create your profile</h1>
-        <p className="mt-1 font-semibold text-ink-soft">Save your garage and collection privately. We don't ask for any financial details here.</p>
+        <p className="mt-1 font-semibold text-ink-soft">Save your vehicles, dream shortlist and experience progress privately. No financial details needed here.</p>
         {loc.state?.reason && <div className="mt-4"><Callout tone="info">{loc.state.reason}</Callout></div>}
 
         <div className="mt-5 space-y-5">
@@ -120,7 +120,7 @@ export default function SignUp() {
 function Check({ id, checked, onChange, error, children }: { id: string; checked: boolean; onChange: (b: boolean) => void; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-2xl border-2 p-3 font-bold ${error ? "border-ball bg-ball-light/30" : "border-ink/15"}`}>
+      <label htmlFor={id} className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-2xl border-2 p-3 font-bold ${error ? "border-coral bg-coral-light/30" : "border-ink/15"}`}>
         <input id={id} type="checkbox" className="h-5 w-5 accent-go" checked={checked} onChange={(e) => onChange(e.target.checked)} /> <span>{children}</span>
       </label>
       {error && <p className="err" role="alert">{error}</p>}

@@ -3,8 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { api } from "@/api/client";
 import { useDream, useInvalidate } from "@/api/hooks";
-import { Disc, EmptyState, ErrorBox, PageHeader, Spinner, useToast } from "@/components/ui";
-import { SEGMENT_COLOR, shortInr } from "@/lib/format";
+import { EmptyState, ErrorBox, PageHeader, Spinner, useToast } from "@/components/ui";
+import { VehicleImage } from "@/components/VehicleImage";
+import { shortInr } from "@/lib/format";
 
 export default function DreamGarage() {
   const { data, isLoading, error, refetch } = useDream();
@@ -24,7 +25,7 @@ export default function DreamGarage() {
           <ul className="space-y-3">
             {data.items.map((m) => (
               <li key={m.id} className="card flex items-center gap-4">
-                <Disc color={SEGMENT_COLOR[m.segment]} size={48} />
+                <VehicleImage id={m.id} label={m.label} type={m.type} className="h-16 w-24 rounded-2xl object-cover" />
                 <div className="min-w-0 flex-1"><Link to={`/explore/${m.id}`} className="block truncate text-lg font-black hover:underline">{m.label}</Link><p className="text-sm font-bold text-ink-mute">{shortInr(m.price_low)} – {shortInr(m.price_high)}</p></div>
                 <Link to={`/experiences?model=${m.id}`} className="btn-ghost hidden sm:inline-flex">Try it</Link>
                 <button className="btn-quiet !p-2" aria-label={`Remove ${m.label}`} onClick={() => remove.mutate(m.id)}><Trash2 className="h-5 w-5" /></button>

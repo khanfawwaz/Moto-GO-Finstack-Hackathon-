@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Bell, RefreshCw, Trash2, Truck } from "lucide-react";
@@ -12,12 +12,13 @@ import { dateFmt, inr } from "@/lib/format";
 import { EquityBlock } from "./parts";
 
 export default function VehicleDetail() {
+  const [sp] = useSearchParams();
   const { id = "" } = useParams();
   const { data: v, isLoading, error, refetch } = useVehicle(id);
   const inv = useInvalidate();
   const nav = useNavigate();
   const toast = useToast();
-  const refresh = () => { inv("vehicle", "garage"); };
+  const refresh = () => { inv("vehicle", "garage", "collection", "me", "insights"); };
 
   const valuation = useMutation({ mutationFn: () => api<Vehicle>(`/vehicles/${id}/valuation`, { body: {} }), onSuccess: () => { refresh(); toast("Valuation refreshed"); }, onError: (e) => toast((e as Error).message, "err") });
   const delivered = useMutation({ mutationFn: () => api(`/vehicles/${id}`, { method: "PATCH", body: { delivery_status: "delivered" } }), onSuccess: () => { refresh(); toast("Marked as delivered"); } });
@@ -36,7 +37,7 @@ export default function VehicleDetail() {
             <button className="btn-ghost" onClick={() => delivered.mutate()}><Truck className="h-4 w-4" aria-hidden /> I've got it</button></span>
         </Callout></div>
       )}
-      <Tabs.Root defaultValue="overview">
+      <Tabs.Root defaultValue={sp.get("tab") === "care" ? "care" : "overview"}>
         <Tabs.List className="mb-5 flex gap-2" aria-label="Vehicle sections">
           {["overview", "care", "history"].map((t) => (
             <Tabs.Trigger key={t} value={t} className="min-h-[44px] rounded-2xl border-2 border-ink/15 bg-white px-5 font-extrabold capitalize data-[state=active]:border-go data-[state=active]:bg-go data-[state=active]:text-white">{t}</Tabs.Trigger>
@@ -50,7 +51,7 @@ export default function VehicleDetail() {
               <EquityBlock v={v} big />
               <div className="flex flex-wrap gap-2">
                 {v.verified_model && <button className="btn-ghost" onClick={() => valuation.mutate()} disabled={valuation.isPending}><RefreshCw className="h-4 w-4" aria-hidden /> Refresh value</button>}
-                <Link to="/roadmap" className="btn-ghost">Use in a goal</Link>
+                <Link to="/explore" className="btn-ghost">Explore your next vehicle</Link>
               </div>
               {valuation.error instanceof ApiError && <p className="err" role="alert">{valuation.error.message}</p>}
             </section>
@@ -72,7 +73,7 @@ export default function VehicleDetail() {
             <h3 className="mb-2 mt-6 text-base">Service history</h3>
             {v.care?.length ? <ul className="space-y-2">{v.care.map((c) => <li key={c.id} className="flex justify-between rounded-xl bg-mint px-3 py-2 text-sm font-bold"><span>{c.kind}</span><span>{dateFmt(c.date)} · {c.odometer.toLocaleString("en-IN")} km</span></li>)}</ul>
               : <p className="text-sm font-semibold text-ink-soft">No service logged yet.</p>}
-            <button className="btn-quiet mt-6 text-ball-dark" onClick={() => { if (confirm("Remove this vehicle from your garage?")) remove.mutate(); }}><Trash2 className="h-4 w-4" aria-hidden /> Remove from garage</button>
+            <button className="btn-quiet mt-6 text-coral-dark" onClick={() => { if (confirm("Remove this vehicle from your garage?")) remove.mutate(); }}><Trash2 className="h-4 w-4" aria-hidden /> Remove from garage</button>
           </section>
         </Tabs.Content>
       </Tabs.Root>

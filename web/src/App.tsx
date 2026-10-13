@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { RequireAuth } from "./components/guards";
 import { Spinner } from "./components/ui";
@@ -11,14 +11,12 @@ const Garage = lazy(() => import("./features/garage/Garage"));
 const AddVehicle = lazy(() => import("./features/garage/AddVehicle"));
 const VehicleDetail = lazy(() => import("./features/garage/VehicleDetail"));
 const Explore = lazy(() => import("./features/explore/Explore"));
+const Forum = lazy(() => import("./features/forum/Forum"));
 const Passport = lazy(() => import("./features/explore/Passport"));
-const DreamGarage = lazy(() => import("./features/explore/DreamGarage"));
-const Capture = lazy(() => import("./features/explore/Capture"));
 const Experiences = lazy(() => import("./features/explore/Experiences"));
-const Roadmap = lazy(() => import("./features/roadmap/Roadmap"));
-const Compare = lazy(() => import("./features/roadmap/Compare"));
 const RoadTo = lazy(() => import("./features/roadmap/RoadTo"));
 const Profile = lazy(() => import("./features/profile/Profile"));
+const Insights = lazy(() => import("./features/profile/Insights"));
 const Ops = lazy(() => import("./features/profile/Ops"));
 const FinanceRoutes = lazy(() => import("./features/finance/FinanceRoutes"));
 const MockProvider = lazy(() => import("./features/finance/MockProvider"));
@@ -36,19 +34,24 @@ export default function App() {
 
           <Route element={<AppShell />}>
             <Route path="/explore" element={<Explore />} />
+            <Route path="/forum" element={<Forum />} />
             <Route path="/explore/:modelId" element={<Passport />} />
-            <Route path="/capture" element={<Capture />} />
+            <Route path="/capture" element={<Navigate to="/explore#capture" replace />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route element={<RequireAuth />}>
               <Route path="/story" element={<Story />} />
               <Route path="/garage" element={<Garage />} />
               <Route path="/garage/add" element={<AddVehicle />} />
               <Route path="/garage/:id" element={<VehicleDetail />} />
-              <Route path="/dream" element={<DreamGarage />} />
-              <Route path="/roadmap" element={<Roadmap />} />
-              <Route path="/roadmap/compare" element={<Compare />} />
+              <Route path="/dream" element={<Navigate to="/garage#dream-garage" replace />} />
+              <Route path="/roadmap" element={<ExploreRedirect />} />
+              <Route path="/roadmap/compare" element={<Navigate to="/explore" replace />} />
+              <Route path="/ownership/:id" element={<RoadTo />} />
               <Route path="/roadmap/goal/:id" element={<RoadTo />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Profile />} />
+              <Route path="/profile" element={<Navigate to="/settings" replace />} />
+              <Route path="/loans" element={<Insights />} />
+              <Route path="/insights" element={<Navigate to="/loans" replace />} />
             </Route>
             <Route element={<RequireAuth role="ops" />}>
               <Route path="/ops" element={<Ops />} />
@@ -59,4 +62,9 @@ export default function App() {
       </Suspense>
     </>
   );
+}
+
+function ExploreRedirect() {
+  const location = useLocation();
+  return <Navigate to={`/explore${location.search}`} replace />;
 }

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..errors import ApiError
-from ..models import CareLog, CatalogueModel, Document, LoanSnapshot, User, Vehicle
+from ..models import Activity, CareLog, CatalogueModel, Document, LoanSnapshot, User, Vehicle
 from ..security import current_user
 from ..services import core, garage
 from ..services.garage import ser_vehicle
@@ -89,7 +89,8 @@ def garage_home(user: User = Depends(current_user), db: Session = Depends(get_db
         total = {"low": sum(i["equity"]["low"] for i in known), "high": sum(i["equity"]["high"] for i in known),
                  "counted": len(known), "of": len(current)}
     return {"vehicles": items, "total_equity": total, "care_task": garage.care_task(db, user.id),
-            "next_goal": garage.next_goal(db, user.id), "collection": garage.collection_progress(db, user.id)}
+            "next_goal": garage.next_goal(db, user.id), "suggestions": garage.roadmap_suggestions(db, user.id),
+            "collection": garage.collection_progress(db, user.id)}
 
 
 @router.get("/vehicles")
@@ -122,7 +123,15 @@ def add_vehicle(body: VehicleIn, user: User = Depends(current_user), db: Session
         d = db.get(Document, body.rc_document_id)
         d.vehicle_id = v.id
     if m and body.ownership == "current":
-        garage.run_valuation(db, v)
+        valuation = garage.run_valuation(db, v)
+        # Owning a vehicle is a meaningful garage milestone. It is awarded once per
+        # model, using the highest estimate for this make, year and condition.
+        already_awarded = db.query(Activity).filter_by(
+            user_id=user.id, model_id=m.id, kind="owned", category="garage"
+        ).first()
+        if not already_awarded:
+            db.add(Activity(user_id=user.id, model_id=m.id, kind="owned", category="garage",
+                            xp=garage.ownership_points(valuation.high), provenance="ownership_v2"))
     core.track("vehicle_added", vehicle=v.id)
     if first:
         core.track("garage_created", user=user.id)

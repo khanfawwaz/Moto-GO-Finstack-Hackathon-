@@ -14,7 +14,7 @@ from ..doc_kinds import KINDS
 from ..errors import ApiError
 from ..finance_config import LENDER, STEP_ORDER, STEP_SCREEN, get_step_spec
 from ..forms import validate
-from ..models import (Application, ApplicationStep, CatalogueModel, Document, LoanSnapshot, Offer, Requirement,
+from ..models import (Activity, Application, ApplicationStep, CatalogueModel, Document, Goal, LoanSnapshot, Offer, Requirement,
                       User, Vehicle)
 from ..state_machine import SIDE_EXITS, TERMINAL, InvalidTransition, check
 from . import core
@@ -172,6 +172,22 @@ def create_application(db: Session, user: User, values: dict, goal_id: str | Non
     model = db.get(CatalogueModel, clean["model_id"])
     if not model or model.type not in LENDER["supported_vehicle_types"]:
         raise ApiError("unsupported_vehicle", "Only two-wheelers can be financed for now.", 422, field="model_id")
+    if goal_id:
+        goal = db.get(Goal, goal_id)
+        if not goal or goal.user_id != user.id or goal.target_model_id != model.id:
+            raise ApiError("validation_error", "Choose the vehicle from your ownership plan.", 422, field="model_id")
+        from . import garage
+        vehicle = db.get(Vehicle, goal.sell_current) if goal.sell_current else None
+        if vehicle and (vehicle.user_id != user.id or vehicle.ownership != "current"):
+            raise ApiError("validation_error", "The vehicle selected for sale is no longer in your garage.", 422)
+        v = garage.ser_vehicle(db, vehicle) if vehicle else None
+        if goal.sell_current and (not v or not v["valuation"] or not v["equity"]["known"]):
+            raise ApiError("validation_error", "Update the sale vehicle's valuation and loan balance first.", 422)
+        clean["ownership_context"] = {"target_model_id": model.id, "cash_down_payment": goal.savings,
+                                      "sale_vehicle_id": vehicle.id if vehicle else None,
+                                      "valuation": v["valuation"] if v else None, "equity": v["equity"] if v else None,
+                                      "loan_payoff": v["loan"]["principal"] if v and v["loan"]["status"] == "active" else 0 if v and v["loan"]["status"] == "none" else None,
+                                      "test_drive_completed": bool(db.query(Activity).filter_by(user_id=user.id, model_id=model.id, kind="test_driven").first())}
     app = Application(user_id=user.id, goal_id=goal_id, lender_id=LENDER["id"], model_id=model.id,
                       amount=clean["amount"], tenure=int(clean["tenure"]), quote=clean["quote"],
                       contribution=clean["contribution"], state="draft", current_step="identity")

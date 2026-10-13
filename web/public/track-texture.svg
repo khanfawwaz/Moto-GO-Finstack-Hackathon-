@@ -1,0 +1,11 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M-160 790C150 610 346 955 610 760C860 576 746 294 1010 225C1260 159 1344 397 1760 54" stroke="#67E8D5" stroke-opacity=".20" stroke-width="2"/>
+  <path d="M-140 836C180 656 365 1001 636 806C892 622 776 338 1035 268C1294 199 1376 442 1780 98" stroke="#67E8D5" stroke-opacity=".10" stroke-width="9"/>
+  <path d="M1050 -90C1031 138 1259 184 1211 386C1163 587 923 626 973 832C1012 993 1241 1003 1365 1118" stroke="#9BD8FF" stroke-opacity=".16" stroke-width="2"/>
+  <path d="M72 64H512M72 90H402M72 116H450" stroke="#FFC845" stroke-opacity=".28" stroke-width="3"/>
+  <g opacity=".16" fill="#DCE9EF">
+    <rect x="1280" y="120" width="18" height="18"/><rect x="1316" y="120" width="18" height="18"/><rect x="1352" y="120" width="18" height="18"/>
+    <rect x="1298" y="138" width="18" height="18"/><rect x="1334" y="138" width="18" height="18"/><rect x="1370" y="138" width="18" height="18"/>
+    <rect x="1280" y="156" width="18" height="18"/><rect x="1316" y="156" width="18" height="18"/><rect x="1352" y="156" width="18" height="18"/>
+  </g>
+</svg>

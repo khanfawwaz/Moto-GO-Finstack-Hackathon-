@@ -7,7 +7,7 @@ export default {
         ink: { DEFAULT: "#10243A", soft: "#3C5068", mute: "#5F7388" },
         mint: { DEFAULT: "#EEF7F3", deep: "#D9EEE6" },
         go: { DEFAULT: "#18A999", dark: "#0B7D70", light: "#BFF0E6" },
-        ball: { DEFAULT: "#F0505A", dark: "#C4343E", light: "#FFE1E3" },
+        coral: { DEFAULT: "#F0505A", dark: "#C4343E", light: "#FFE1E3" },
         sun: { DEFAULT: "#FFC845", dark: "#B77D00", light: "#FFF1C7" },
         sky: { DEFAULT: "#4DA3FF", dark: "#1F6FCC", light: "#DCEEFF" },
       },
@@ -16,7 +16,7 @@ export default {
       boxShadow: {
         chunk: "0 4px 0 0 rgba(16,36,58,.14)",
         "chunk-go": "0 4px 0 0 #0B7D70",
-        "chunk-ball": "0 4px 0 0 #C4343E",
+        "chunk-coral": "0 4px 0 0 #C4343E",
         pop: "0 10px 30px -10px rgba(16,36,58,.25)",
       },
       keyframes: {

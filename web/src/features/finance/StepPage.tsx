@@ -45,7 +45,7 @@ export default function StepPage() {
         method: "PUT", body: { values, submit }, idem: submit ? idem : undefined,
       });
       if (!submit) return;
-      inv("application", "applications");
+      inv("application", "applications", "insights");
       if (r.redirect) nav(r.redirect.url);
       else nav(`/finance/${id}`);
     } catch (e) {

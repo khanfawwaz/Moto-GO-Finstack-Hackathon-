@@ -80,12 +80,12 @@ def test_collection_xp_rules_and_dedup(api):
     api.login("9999900002")
     p0 = api.get("/collection").json()["progress"]["xp"]
     r = api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "spotted"}).json()
-    assert r["xp_awarded"] == 10 and not r["duplicate"]
+    assert r["xp_awarded"] == 50 and not r["duplicate"]
     assert api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "spotted"}).json()["duplicate"]
-    assert api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "rented"}).json()["xp_awarded"] == 25
+    assert api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "rented"}).json()["xp_awarded"] == 500
     assert api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "saved"}).json()["xp_awarded"] == 0
     assert api.post("/activities", {"model_id": "royal-enfield-hunter-350", "activity": "past_owned"}).json()["xp_awarded"] == 0
-    assert api.get("/collection").json()["progress"]["xp"] == p0 + 35
+    assert api.get("/collection").json()["progress"]["xp"] == p0 + 550
     assert len(api.get("/dream-garage").json()["items"]) == 1
     assert api.delete("/activities/saved/royal-enfield-hunter-350").status_code == 204
 

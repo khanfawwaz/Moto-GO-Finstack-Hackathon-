@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { AlertTriangle, CheckCircle2, Info, Loader2, X } from "lucide-react";
+import { AlertTriangle, CarFront, CheckCircle2, Info, Loader2, X } from "lucide-react";
 import { ApiError } from "@/api/client";
 import { useMeta } from "@/api/hooks";
 import { SEGMENT_COLOR } from "@/lib/format";
@@ -18,10 +18,10 @@ export function Spinner({ label = "Loading" }: { label?: string }) {
 export function ErrorBox({ error, retry }: { error: unknown; retry?: () => void }) {
   const msg = error instanceof ApiError ? error.message : "Something went wrong. Please try again.";
   return (
-    <div role="alert" className="card flex items-start gap-3 border-ball/40 bg-ball-light/40">
-      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-ball-dark" aria-hidden />
+    <div role="alert" className="card flex items-start gap-3 border-coral/40 bg-coral-light/40">
+      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-coral-dark" aria-hidden />
       <div className="flex-1">
-        <p className="font-extrabold text-ball-dark">{msg}</p>
+        <p className="font-extrabold text-coral-dark">{msg}</p>
         {retry && <button className="btn-ghost mt-3" onClick={retry}>Try again</button>}
       </div>
     </div>
@@ -67,28 +67,11 @@ export function PageHeader({ title, sub, action, back }: { title: ReactNode; sub
 export function EmptyState({ title, body, children }: { title: string; body: string; children?: ReactNode }) {
   return (
     <div className="card flex flex-col items-center gap-3 border-dashed py-10 text-center">
-      <Disc color="#18A999" size={56} />
+      <CarFront className="h-14 w-14 text-go" aria-hidden />
       <h2 className="text-xl">{title}</h2>
       <p className="max-w-md font-semibold text-ink-soft">{body}</p>
       <div className="mt-1 flex flex-wrap justify-center gap-3">{children}</div>
     </div>
-  );
-}
-
-/** The collection "ball": a split disc, coloured by branch, lit up once discovered. */
-export function Disc({ color, size = 44, lit = true, children }: { color: string; size?: number; lit?: boolean; children?: ReactNode }) {
-  const id = useId();
-  return (
-    <span className="relative inline-flex shrink-0 items-center justify-center" style={{ width: size, height: size }} aria-hidden>
-      <svg viewBox="0 0 40 40" width={size} height={size}>
-        <defs><clipPath id={id}><circle cx="20" cy="20" r="18" /></clipPath></defs>
-        <circle cx="20" cy="20" r="18" fill={lit ? "#fff" : "#E7EEF0"} stroke="#10243A" strokeWidth="3" />
-        <g clipPath={`url(#${id})`}><rect x="0" y="0" width="40" height="20" fill={lit ? color : "#C5D2D6"} /></g>
-        <path d="M2 20h36" stroke="#10243A" strokeWidth="3" />
-        <circle cx="20" cy="20" r="6" fill="#fff" stroke="#10243A" strokeWidth="3" />
-      </svg>
-      {children}
-    </span>
   );
 }
 
@@ -106,7 +89,7 @@ export function ProgressBar({ value, max, label, tone = "go" }: { value: number;
 }
 
 const TONES: Record<string, string> = {
-  verified: "bg-go-light text-go-dark", needs_attention: "bg-sun-light text-sun-dark", rejected: "bg-ball-light text-ball-dark",
+  verified: "bg-go-light text-go-dark", needs_attention: "bg-sun-light text-sun-dark", rejected: "bg-coral-light text-coral-dark",
   processing: "bg-sky-light text-sky-dark", uploading: "bg-sky-light text-sky-dark", open: "bg-sun-light text-sun-dark", resolved: "bg-go-light text-go-dark",
 };
 const LABELS: Record<string, string> = { verified: "Verified", needs_attention: "Needs attention", rejected: "Rejected", processing: "Checking…", uploading: "Uploading…", open: "Needed", resolved: "Done" };
@@ -131,7 +114,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex flex-col items-center gap-2 px-4 md:bottom-6" role="status" aria-live="polite">
         {items.map((t) => (
           <div key={t.id} className={cx("pointer-events-auto max-w-md animate-pop rounded-2xl border-2 px-4 py-3 text-sm font-extrabold shadow-pop",
-            t.tone === "ok" ? "border-go bg-white text-go-dark" : "border-ball bg-white text-ball-dark")}>{t.msg}</div>
+            t.tone === "ok" ? "border-go bg-white text-go-dark" : "border-coral bg-white text-coral-dark")}>{t.msg}</div>
         ))}
       </div>
     </ToastCtx.Provider>

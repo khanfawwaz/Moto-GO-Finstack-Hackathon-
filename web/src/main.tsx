@@ -6,6 +6,7 @@ import { ApiError } from "./api/client";
 import { ToastProvider } from "./components/ui";
 import App from "./App";
 import "./index.css";
+import "./apex-theme.css";
 
 const qc = new QueryClient({
   defaultOptions: {

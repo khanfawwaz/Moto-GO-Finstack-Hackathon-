@@ -5,6 +5,7 @@ import { ArrowLeft, X } from "lucide-react";
 import { api } from "@/api/client";
 import type { Model } from "@/api/types";
 import { ModelPicker } from "@/components/ModelPicker";
+import { VehicleImage } from "@/components/VehicleImage";
 import { PageHeader } from "@/components/ui";
 import { asOf, SEGMENT_LABEL, shortInr } from "@/lib/format";
 
@@ -38,7 +39,7 @@ export default function Compare() {
             <caption className="sr-only">Comparison of selected vehicles</caption>
             <thead><tr className="border-b-2 border-ink/10"><td className="p-3" />{items.map((m) => (
               <th key={m.id} scope="col" className="p-3 align-top">
-                <div className="flex items-start justify-between gap-2"><Link to={`/explore/${m.id}`} className="text-lg font-black hover:underline">{m.label}</Link>
+                <div className="flex items-start justify-between gap-2"><VehicleImage id={m.id} label={m.label} type={m.type} className="mb-2 h-16 w-24 rounded-2xl object-cover" /><Link to={`/explore/${m.id}`} className="text-lg font-black hover:underline">{m.label}</Link>
                   <button aria-label={`Remove ${m.label}`} className="btn-quiet !min-h-[36px] !p-1.5" onClick={() => set(ids.filter((i) => i !== m.id))}><X className="h-4 w-4" /></button></div>
               </th>))}</tr></thead>
             <tbody>

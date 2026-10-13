@@ -35,7 +35,7 @@ export function UploadField({ id, kind, label, applicationId, requirementId, veh
   const done = phase === "verified" || phase === "needs_attention";
   const bad = phase === "rejected" || phase === "error";
   const tone = phase === "verified" ? "border-go bg-go-light/40" : phase === "needs_attention" ? "border-sun bg-sun-light/50"
-    : bad || error || localErr ? "border-ball bg-ball-light/30" : over ? "border-go bg-go-light/30" : "border-ink/20 bg-white";
+    : bad || error || localErr ? "border-coral bg-coral-light/30" : over ? "border-go bg-go-light/30" : "border-ink/20 bg-white";
 
   return (
     <div>
@@ -60,7 +60,7 @@ export function UploadField({ id, kind, label, applicationId, requirementId, veh
             {isBusy(item) ? <Loader2 className="h-6 w-6 animate-spin text-sky-dark" aria-hidden />
               : phase === "verified" ? <CheckCircle2 className="h-6 w-6 text-go-dark" aria-hidden />
               : phase === "needs_attention" ? <AlertTriangle className="h-6 w-6 text-sun-dark" aria-hidden />
-              : <XCircle className="h-6 w-6 text-ball-dark" aria-hidden />}
+              : <XCircle className="h-6 w-6 text-coral-dark" aria-hidden />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-extrabold">{item.name}</p>
               <p className="text-xs font-bold text-ink-soft">

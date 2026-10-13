@@ -1,0 +1,190 @@
+/*
+ * APEX GARAGE — reversible visual layer.
+ * Remove this file's import from src/main.tsx to return to the original theme.
+ */
+
+:root { color-scheme: dark; }
+
+body, .bg-paper, .bg-mint {
+  background-color: #070b10 !important;
+  background-image:
+    radial-gradient(ellipse at 18% -12%, rgba(22, 191, 169, .30), transparent 34rem),
+    radial-gradient(ellipse at 94% 8%, rgba(65, 137, 226, .20), transparent 31rem),
+    linear-gradient(145deg, rgba(255,255,255,.045), transparent 28%, rgba(0,0,0,.20) 76%),
+    url("/track-texture.svg") !important;
+  background-position: center, center, center, center;
+  background-size: auto, auto, auto, cover;
+  color: #eff5f8;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .42;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.012) 0 1px, transparent 1px 5px);
+}
+
+body, .font-sans { font-family: "Inter", "Helvetica Neue", Arial, sans-serif !important; }
+h1, h2, h3, .apex-heading, .font-black, .font-extrabold, .btn, .label, .chip { font-family: "Barlow Condensed", "Arial Narrow", sans-serif !important; letter-spacing: .022em; }
+.font-mono, kbd { font-family: "IBM Plex Mono", ui-monospace, monospace !important; }
+
+/* Semantic text stays readable without touching individual components. */
+.text-ink { color: #eff5f8 !important; }
+.text-ink-soft { color: #b6c3cc !important; }
+.text-ink-mute { color: #7f919e !important; }
+.text-go-dark { color: #64e7d0 !important; }
+.text-sky-dark { color: #8cc8ff !important; }
+.text-sun-dark { color: #ffd36b !important; }
+.text-coral-dark { color: #ff919a !important; }
+
+/* Replace the old pastel paper, cards and controls with pit-wall surfaces. */
+[class*="bg-white"] { background-color: #0d151d !important; }
+.bg-mint\/55, .bg-mint\/65, .bg-mint\/50 { background-color: rgba(20, 61, 62, .54) !important; }
+.bg-go-light, .bg-go-light\/50, .bg-go-light\/60 { background-color: rgba(19, 132, 119, .25) !important; }
+.bg-sky-light { background-color: rgba(32, 101, 168, .26) !important; }
+/* Info callouts use Tailwind's opacity variant, so give that exact surface a dark cockpit treatment too. */
+.bg-sky-light\/70 {
+  background: linear-gradient(135deg, rgba(25, 103, 166, .42), rgba(10, 29, 47, .82)) !important;
+  border-color: rgba(103, 190, 255, .42) !important;
+}
+.bg-sun-light, .bg-sun-light\/60 { background-color: rgba(186, 126, 0, .19) !important; }
+.bg-coral-light, .bg-coral-light\/60 { background-color: rgba(170, 45, 61, .22) !important; }
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(161, 186, 201, .17) !important;
+  border-radius: 18px !important;
+  background-color: #111b24 !important;
+  background-image:
+    radial-gradient(circle at 96% 0%, rgba(57, 176, 195, .18), transparent 17rem),
+    linear-gradient(145deg, rgba(36, 51, 64, .98), rgba(11, 17, 24, .99) 64%, rgba(7, 12, 17, 1)) !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .34), inset 0 1px rgba(255,255,255,.075) !important;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top: 1px solid rgba(255,255,255,.10);
+  background:
+    linear-gradient(110deg, rgba(255,255,255,.05), transparent 27%),
+    repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,.018) 18px 19px);
+}
+
+.input, select, textarea {
+  border-color: rgba(161, 186, 201, .28) !important;
+  background: #091017 !important;
+  color: #eff5f8 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.input::placeholder { color: #667987 !important; }
+.input:focus, select:focus, textarea:focus { border-color: #30d2bd !important; box-shadow: 0 0 0 3px rgba(48, 210, 189, .16); }
+
+.btn { border-radius: 10px !important; letter-spacing: .01em; }
+.btn-go { background: linear-gradient(135deg, #19b8a4, #11796e) !important; box-shadow: 0 6px 18px rgba(16, 184, 164, .22) !important; }
+.btn-ghost { border-color: rgba(161, 186, 201, .25) !important; background: rgba(20, 30, 39, .92) !important; color: #eff5f8 !important; box-shadow: none !important; }
+.btn-ghost:hover { border-color: rgba(100, 231, 208, .62) !important; background: rgba(25, 55, 60, .72) !important; }
+.btn-quiet { color: #b6c3cc !important; }
+
+[class*="border-ink"] { border-color: rgba(161, 186, 201, .18) !important; }
+.shadow-chunk, .shadow-chunk-go, .shadow-chunk-coral { box-shadow: 0 16px 38px rgba(0,0,0,.24) !important; }
+
+/* Shell: a low, technical top bar and a pit-lane navigation strip. */
+header.sticky { background: rgba(7, 12, 18, .90) !important; border-color: rgba(161, 186, 201, .16) !important; }
+nav[aria-label="Main"] {
+  background: rgba(7, 12, 18, .96) !important;
+  border-color: rgba(161, 186, 201, .16) !important;
+  box-shadow: 0 -14px 38px rgba(0,0,0,.34) !important;
+}
+nav[aria-label="Main"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #18c4ad 14%, #74e4d6 42%, #ffc845 56%, #ff646d 74%, transparent);
+  opacity: .92;
+}
+nav[aria-label="Main"] .bg-go-light { background: rgba(25, 184, 164, .18) !important; box-shadow: inset 0 0 0 1px rgba(100, 231, 208, .24); }
+nav[aria-label="Main"] kbd { background: #111c25 !important; color: #9fb2be !important; }
+
+/* Page titles read like a timing-board heading. */
+#main { position: relative; }
+#main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .48;
+  background-image: linear-gradient(90deg, rgba(103,232,213,.06) 1px, transparent 1px), linear-gradient(rgba(103,232,213,.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 42rem);
+  mask-image: linear-gradient(to bottom, black, transparent 42rem);
+}
+#main > * { position: relative; }
+#main > header { position: relative; padding-bottom: 16px; }
+#main > header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, #19b8a4 0 74px, #ffc845 74px 96px, rgba(161,186,201,.16) 96px 100%);
+}
+
+/* Images become cinematic vehicle assets instead of floating pastel rectangles. */
+img.object-cover { filter: saturate(1.08) contrast(1.06); }
+.map-bg {
+  background-color: #101c24 !important;
+  background-image:
+    linear-gradient(112deg, rgba(24,169,153,.15), transparent 48%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 22px) !important;
+}
+
+/* Sheets and dialogs need the same visual system despite being portalled. */
+[role="dialog"], [data-radix-portal] > div > div {
+  border-color: rgba(161, 186, 201, .24) !important;
+  background: linear-gradient(145deg, #15212b, #0a1118) !important;
+  color: #eff5f8 !important;
+}
+
+@media (min-width: 768px) {
+  #main { padding-top: 3.25rem; }
+  .card { border-radius: 20px !important; }
+}
+
+/* Explore entry points: warm capture bay, cool-blue financing bay. */
+.card.explore-capture {
+  background: radial-gradient(ellipse at 0% 0%, rgba(255, 195, 91, .22), transparent 65%), linear-gradient(125deg, #62401d, #342515 72%, #292015) !important;
+  border-color: rgba(255, 195, 91, .65) !important;
+  box-shadow: 0 12px 35px rgba(0,0,0,.25), inset 4px 0 #ffc35b, inset 0 1px rgba(255,225,168,.18) !important;
+}
+.explore-capture h2 { color: #ffe3af; }
+.explore-capture .text-ink-soft { color: #f0dec2 !important; }
+.explore-capture .text-sun-dark { color: #ffda7a !important; }
+.explore-capture .btn-ghost {
+  background: rgba(39, 27, 14, .72) !important;
+  border-color: rgba(255, 210, 138, .48) !important;
+  color: #fff0d6 !important;
+}
+.explore-capture .btn-go {
+  background: linear-gradient(135deg, #ffda82, #efb546) !important;
+  color: #2d1d09 !important;
+  box-shadow: 0 5px 18px rgba(239,181,70,.2) !important;
+}
+.card.explore-eligibility {
+  background: radial-gradient(ellipse at 100% 0%, rgba(107, 166, 255, .24), transparent 65%), linear-gradient(125deg, #254478, #192f58 72%, #172745) !important;
+  border-color: rgba(125, 178, 255, .65) !important;
+  box-shadow: 0 12px 35px rgba(0,0,0,.25), inset 4px 0 #8ebeff, inset 0 1px rgba(190,217,255,.18) !important;
+}
+.explore-eligibility .text-ink-soft { color: #e1ecff !important; }
+.explore-eligibility .text-ink-mute { color: #bdcff0 !important; }
+.explore-eligibility .btn-go {
+  background: linear-gradient(135deg, #2f6fdb, #2453b8) !important;
+  color: #fff !important;
+  box-shadow: 0 5px 18px rgba(48,112,230,.28) !important;
+}

@@ -3,15 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Download, LogOut, Trash2 } from "lucide-react";
 import { api } from "@/api/client";
-import { useApplications, useConsents, useInvalidate, useLogout, useMe } from "@/api/hooks";
+import { useCollection, useConsents, useInvalidate, useLogout, useMe } from "@/api/hooks";
 import { cx, ErrorBox, PageHeader, ProgressBar, Spinner, useToast } from "@/components/ui";
-import { dateFmt, inr } from "@/lib/format";
-import { STATE_LABEL } from "../finance/Frame";
+import { dateFmt } from "@/lib/format";
 
 export default function Profile() {
   const { data: me } = useMe();
   const { data: consents, error, refetch } = useConsents();
-  const { data: apps } = useApplications();
+  const collection = useCollection();
   const inv = useInvalidate();
   const toast = useToast();
   const nav = useNavigate();
@@ -30,27 +29,29 @@ export default function Profile() {
   };
 
   if (!me) return <Spinner />;
+  const count = (badges: string[], type?: string) => collection.data?.models.filter(m => (!type || m.type === type) && m.badges.some(b => badges.includes(b))).length ?? 0;
   const mktOn = consents?.items.some((c) => c.type === "marketing" && !c.withdrawn_at);
   return (
     <>
-      <PageHeader title={me.display_name} sub={me.phone ? `Mobile ${me.phone}` : me.email ?? ""}
+      <PageHeader title="Settings" sub={`${me.display_name} · Your account, activity and privacy` }
         action={<button className="btn-ghost" onClick={async () => { await logout.mutateAsync(); nav("/"); }}><LogOut className="h-4 w-4" aria-hidden /> Sign out</button>} />
       <div className="grid gap-5 md:grid-cols-2">
-        <section className="card space-y-3">
-          <h2 className="text-lg">Rider level</h2>
+        <section id="progress" className="card scroll-mt-24 space-y-3">
+          <h2 className="text-lg">Level & rewards</h2>
           <p className="font-black">Lv {me.level} · {me.title} · {me.xp} XP</p>
-          <ProgressBar value={me.xp % 50} max={50} label="Progress to next level" tone="sun" />
-          <p className="help">XP comes from discovering and experiencing models. It never rewards borrowing, and it's never shared with a lender.</p>
+          <ProgressBar value={me.xp % 1000} max={1000} label="Progress to next level" tone="sun" />
+          <p className="help">Owning earns 2,000 points plus a value bonus, renting 500, test drives 250 and sightings 50. Repeat logs earn no extra points; points do not affect lender eligibility.</p>
         </section>
 
-        <section className="card space-y-3" aria-label="Saved applications">
-          <h2 className="text-lg">Finance applications</h2>
-          {!apps?.items.length ? <p className="font-semibold text-ink-soft">None. Financing only starts when you choose “Explore financing”.</p> : (
-            <ul className="space-y-2">{apps.items.map((a) => (
-              <li key={a.id}><Link to={`/finance/${a.id}`} className="flex min-h-[44px] items-center justify-between gap-3 rounded-2xl border-2 border-ink/10 p-3 hover:border-go/60">
-                <span className="min-w-0"><span className="block truncate font-black">{a.model?.label} · {inr(a.amount)}</span><span className="text-xs font-bold text-ink-mute">Started {dateFmt(a.created_at)}</span></span>
-                <span className="chip bg-ink/10 text-ink-soft">{STATE_LABEL[a.state] ?? a.state}</span></Link></li>))}</ul>
-          )}
+        <section className="card space-y-3" aria-label="Onboarding profile">
+          <h2 className="text-lg">Your profile</h2>
+          <dl className="grid gap-3 text-sm sm:grid-cols-2">{[["Name", me.display_name], ["Phone / email", me.phone ?? me.email ?? "Not provided"], ["City", me.profile?.city ?? "Not provided"], ["Interests", me.profile?.interests.join(", ") || "Not provided"]].map(([label,value]) => <div key={label}><dt className="text-xs text-ink-mute">{label}</dt><dd className="font-bold">{value}</dd></div>)}</dl>
+          <Link to="/loans" className="btn-ghost">Loans, insurance & offers</Link>
+        </section>
+        <section className="card space-y-3 md:col-span-2" aria-label="Activity statistics">
+          <h2 className="text-lg">Your activity</h2>
+          {collection.error ? <ErrorBox error={collection.error} retry={() => collection.refetch()} /> : collection.isLoading ? <Spinner /> : <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{[["Cars spotted",count(["spotted"],"car")],["All vehicles spotted",count(["spotted"])],["Test drives",count(["test_driven"])],["Vehicles rented",count(["rented","short_rental","long_rental"])],["Short rentals",count(["short_rental"])],["Long rentals",count(["long_rental"])]].map(([label,value]) => <div key={String(label)} className="rounded-xl border border-ink/10 p-3"><p className="text-xs text-ink-mute">{label}</p><p className="text-2xl font-black text-go-dark">{value}</p></div>)}</div>}
+          <p className="help">Unique models with saved, self-reported experiences.</p>
         </section>
 
         <section className="card space-y-3 md:col-span-2" aria-label="Consents">
@@ -78,10 +79,10 @@ export default function Profile() {
           <h2 className="text-lg">Your data</h2>
           <div className="flex flex-wrap gap-3">
             <button className="btn-ghost" onClick={exportData}><Download className="h-4 w-4" aria-hidden /> Download my data</button>
-            {!confirmDelete ? <button className="btn-ghost text-ball-dark" onClick={() => setConfirmDelete(true)}><Trash2 className="h-4 w-4" aria-hidden /> Request deletion</button> : (
-              <span className={cx("flex flex-wrap items-center gap-2 rounded-2xl border-2 border-ball/40 p-2")}>
+            {!confirmDelete ? <button className="btn-ghost text-coral-dark" onClick={() => setConfirmDelete(true)}><Trash2 className="h-4 w-4" aria-hidden /> Request deletion</button> : (
+              <span className={cx("flex flex-wrap items-center gap-2 rounded-2xl border-2 border-coral/40 p-2")}>
                 <span className="px-2 text-sm font-bold">Ask support to delete your account and data?</span>
-                <button className="btn-ball" disabled={del.isPending} onClick={() => del.mutate()}>Yes, request deletion</button>
+                <button className="btn-coral" disabled={del.isPending} onClick={() => del.mutate()}>Yes, request deletion</button>
                 <button className="btn-quiet" onClick={() => setConfirmDelete(false)}>Keep my account</button>
               </span>)}
           </div>

@@ -4,9 +4,10 @@ import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Bookmark, BookmarkCheck, Flag, Route as RouteIcon } from "lucide-react";
 import { api, ApiError } from "@/api/client";
 import { useInvalidate, useMe, usePassport } from "@/api/hooks";
-import { Callout, Disc, ErrorBox, PageHeader, Sheet, Spinner, useToast } from "@/components/ui";
-import { asOf, inr, SEGMENT_COLOR, SEGMENT_LABEL, shortInr } from "@/lib/format";
-import { BadgeChips, isDiscovered, specLine } from "./parts";
+import { Callout, ErrorBox, PageHeader, Sheet, Spinner, useToast } from "@/components/ui";
+import { VehicleImage } from "@/components/VehicleImage";
+import { asOf, inr, SEGMENT_LABEL, shortInr } from "@/lib/format";
+import { BadgeChips, specLine } from "./parts";
 
 const ACTIVITY = [
   ["spotted", "Spotted one on the road"], ["ridden", "Rode one"], ["driven", "Drove one"], ["test_driven", "Test-drove one"],
@@ -31,7 +32,7 @@ export default function Passport() {
 
   const plan = useMutation({
     mutationFn: () => api<{ id: string }>("/goals", { body: { target_model_id: modelId } }),
-    onSuccess: (g) => { inv("goals", "garage"); nav(`/roadmap/goal/${g.id}`); },
+    onSuccess: (g) => { inv("goals", "garage"); nav(`/ownership/${g.id}`); },
   });
 
   if (isLoading) return <Spinner />;
@@ -46,7 +47,7 @@ export default function Passport() {
       <div className="grid gap-5 md:grid-cols-[1fr_340px]">
         <div className="space-y-5">
           <section className="card flex items-center gap-5 map-bg">
-            <Disc color={SEGMENT_COLOR[m.segment]} lit={isDiscovered(badges)} size={96} />
+            <VehicleImage id={m.id} label={m.label} type={m.type} className="h-28 w-40 rounded-2xl object-cover" priority />
             <div>
               <p className="text-2xl font-black">{shortInr(m.price_low)} – {shortInr(m.price_high)}</p>
               <p className="text-sm font-bold text-ink-soft">Ex-showroom range · {m.source} · {asOf(m.as_of)}</p>
@@ -100,7 +101,7 @@ function LogSheet({ open, onOpenChange, modelId, label, onDone }: { open: boolea
           <div><label className="label" htmlFor="arate">Rating</label><select id="arate" className="input" value={rating} onChange={(e) => setRating(e.target.value)}><option value="">—</option>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select></div>
         </div>
         {log.error instanceof ApiError && <p className="err" role="alert">{log.error.message}</p>}
-        <p className="help">Rewards: spotted +10, ridden/driven/rented +25, test-driven +25, each once per model. No XP for ownership or anything financial.</p>
+        <p className="help">Rewards: spotted +50, driven/ridden or test drive +250, rental +500, each once per model and activity. Ownership in Garage earns 2,000 plus a value bonus. Borrowing earns no points.</p>
         <button className="btn-go w-full" disabled={log.isPending} onClick={() => log.mutate()}>{log.isPending ? "Saving…" : "Save to passport"}</button>
       </div>
     </Sheet>

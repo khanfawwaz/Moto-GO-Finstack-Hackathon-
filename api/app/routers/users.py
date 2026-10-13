@@ -30,6 +30,23 @@ def me(user: User = Depends(current_user), db: Session = Depends(get_db)):
     return ser_user(db, user)
 
 
+@router.get("/insights")
+def insights(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """A minimal financial profile from this user's saved applications, never identity documents."""
+    profiles = []
+    for application in db.query(Application).filter_by(user_id=user.id).order_by(Application.created_at.desc()):
+        step = db.get(ApplicationStep, (application.id, "identity"))
+        identity = (step.payload_json or {}) if step else {}
+        kyc = db.get(ApplicationStep, (application.id, "kyc"))
+        profiles.append({"application_id": application.id,
+                         "declared_monthly_income": identity.get("income"),
+                         "declared_existing_emis": identity.get("existing_emis"),
+                         "employment": identity.get("employment"),
+                         "identity_status": step.status if step else "not_started",
+                         "kyc_status": kyc.status if kyc else "not_started"})
+    return {"financial_profiles": profiles}
+
+
 @router.patch("/me")
 def patch_me(body: MePatch, user: User = Depends(current_user), db: Session = Depends(get_db)):
     p = db.get(Profile, user.id)

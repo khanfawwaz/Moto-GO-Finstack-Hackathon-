@@ -38,7 +38,7 @@ export default function Ops() {
               <section className="card"><h2 className="mb-2 text-lg">Timeline</h2>
                 <ol className="space-y-1.5 text-sm">{detail.data.timeline.map((e, i) => <li key={i} className="flex gap-3"><span className="w-20 shrink-0 font-mono text-xs text-ink-mute">{new Date(e.at + "Z").toLocaleTimeString("en-IN")}</span><span className="font-bold">{e.summary}</span>{e.payload_hash && <span className="font-mono text-[10px] text-ink-mute">#{e.payload_hash.slice(0, 8)}</span>}</li>)}</ol></section>
               <section className="card"><h2 className="mb-2 text-lg">Consent log</h2>
-                <ul className="space-y-1 text-sm font-bold">{detail.data.consents.map((c, i) => <li key={i}>{c.type} → {c.recipient} · {c.text_version} · {new Date(c.granted_at + "Z").toLocaleString("en-IN")}{c.withdrawn_at && <span className="text-ball-dark"> · withdrawn</span>}</li>)}</ul></section>
+                <ul className="space-y-1 text-sm font-bold">{detail.data.consents.map((c, i) => <li key={i}>{c.type} → {c.recipient} · {c.text_version} · {new Date(c.granted_at + "Z").toLocaleString("en-IN")}{c.withdrawn_at && <span className="text-coral-dark"> · withdrawn</span>}</li>)}</ul></section>
               <section className="card"><h2 className="mb-2 text-lg">Documents (metadata)</h2>
                 <ul className="space-y-1.5 text-sm font-bold">{detail.data.documents.map((d) => <li key={d.id} className="flex flex-wrap items-center gap-2">{d.kind} · {d.filename}<StatusChip status={d.status} />{d.reason && <span className="font-semibold text-ink-mute">{d.reason}</span>}</li>)}</ul></section>
               <section className="card"><h2 className="mb-2 text-lg">Steps</h2>

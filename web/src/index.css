@@ -15,15 +15,15 @@
 @layer components {
   .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-[15px] font-extrabold transition active:translate-y-[3px] disabled:cursor-not-allowed disabled:opacity-50; }
   .btn-go { @apply btn bg-go text-white shadow-chunk-go hover:bg-go-dark active:shadow-none; }
-  .btn-ball { @apply btn bg-ball text-white shadow-chunk-ball hover:bg-ball-dark active:shadow-none; }
+  .btn-coral { @apply btn bg-coral text-white shadow-chunk-coral hover:bg-coral-dark active:shadow-none; }
   .btn-ghost { @apply btn border-2 border-ink/15 bg-white text-ink shadow-chunk hover:border-ink/30 active:shadow-none; }
   .btn-quiet { @apply btn px-3 text-ink-soft hover:bg-ink/5; }
   .card { @apply rounded-3xl border-2 border-ink/10 bg-white p-5 shadow-chunk; }
   .input { @apply min-h-[44px] w-full rounded-2xl border-2 border-ink/15 bg-white px-4 py-2.5 text-[16px] font-semibold text-ink placeholder:font-medium placeholder:text-ink-mute/70 focus:border-go focus:outline-none; }
-  .input-err { @apply border-ball; }
+  .input-err { @apply border-coral; }
   .label { @apply mb-1.5 block text-sm font-extrabold text-ink; }
   .help { @apply mt-1.5 text-[13px] font-semibold text-ink-mute; }
-  .err { @apply mt-1.5 text-[13px] font-extrabold text-ball-dark; }
+  .err { @apply mt-1.5 text-[13px] font-extrabold text-coral-dark; }
   .chip { @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold; }
 }
 
